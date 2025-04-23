@@ -1,116 +1,180 @@
-#include<bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <limits>
+
 using namespace std;
 
-void firstfit(int n,int m,vector<int> frames,vector<int> processes){
-    int index = 0;
-    for(int i=0;i<n;i++){
-        bool found = false;
-        for(int j =0;j<m;j++){
-            if(frames[j]>=processes[i]){
-                found = true;
-                index = j;
+void firstFit(vector<int> holes, const vector<int>& procs) {
+    cout << endl;
+    for (size_t i = 0; i < procs.size(); ++i) {
+        bool allocated = false;
+        for (size_t j = 0; j < holes.size(); ++j) {
+            if (holes[j] >= procs[i]) {
+                cout << "Process " << i+1
+                     << " (size=" << procs[i] << ") -> "
+                     << "Hole " << j+1
+                     << " (was " << holes[j]
+                     << ", now " << (holes[j] - procs[i]) << ")\n";
+                holes[j] -= procs[i];
+                allocated = true;
                 break;
             }
-            
         }
-        if(!found){
-            cout<<"Process "<<i+1<<"cannot be allocated "<<endl;
-            break;
-        }else{
-            cout<<"Process "<<i+1<<" allocated to frame "<<index +1<<endl;
-            frames[index]-=processes[i];
+        if (!allocated) {
+            cout << "Process " << i+1
+                 << " (size=" << procs[i]
+                 << ") cannot be allocated.\n";
         }
     }
 }
 
-void bestfit(int n,int m , vector<int>frames,vector<int> processes){
-    for(int i=0;i<n;i++){
-        int index = -1;
-        int small = INT_MAX;
-        for(int j = 0;j<m;j++){
-            if(frames[j]>=processes[i] and frames[j]<small){
-                small = frames[j];
-                index = j;
+void bestFit(vector<int> holes, const vector<int>& procs) {
+    cout << endl;
+    for (size_t i = 0; i < procs.size(); ++i) {
+        int bestIdx = -1;
+        int bestSize = numeric_limits<int>::max();
+        for (size_t j = 0; j < holes.size(); ++j) {
+            if (holes[j] >= procs[i] && holes[j] < bestSize) {
+                bestSize = holes[j];
+                bestIdx = j;
             }
         }
-        if(index == -1){
-            cout<<"Process "<<i+1<<"cannot be allocated "<<endl;
-            break;
-        }else{
-            cout<<"Process "<<i+1<<" allocated to frame "<<index +1<<endl;
-            frames[index]-=processes[i];
+        if (bestIdx != -1) {
+            cout << "Process " << i+1
+                 << " (size=" << procs[i] << ") -> "
+                 << "Hole " << bestIdx+1
+                 << " (was " << holes[bestIdx]
+                 << ", now " << (holes[bestIdx] - procs[i]) << ")\n";
+            holes[bestIdx] -= procs[i];
+        } else {
+            cout << "Process " << i+1
+                 << " (size=" << procs[i]
+                 << ") cannot be allocated.\n";
         }
     }
 }
 
-void worstfit(int n,int m,vector<int> frames,vector<int> processes){
-    for(int i=0;i<n;i++){
-        int index = -1;
-        int large = INT_MIN;
-        for(int j = 0;j<m;j++){
-            if(frames[j]>=processes[i] and frames[j]>large){
-                large = frames[j];
-                index = j;
+void worstFit(vector<int> holes, const vector<int>& procs) {
+    cout << endl;
+    for (size_t i = 0; i < procs.size(); ++i) {
+        int worstIdx = -1;
+        int worstSize = -1;
+        for (size_t j = 0; j < holes.size(); ++j) {
+            if (holes[j] >= procs[i] && holes[j] > worstSize) {
+                worstSize = holes[j];
+                worstIdx = j;
             }
         }
-        if(index == -1){
-            cout<<"Process "<<i+1<<" cannot be allocated"<<endl;
-            break;
-        } else{
-            cout<<"Process "<<i+1<<" allocated to frame "<<index +1<<endl;
-            frames[index]-=processes[i];
+        if (worstIdx != -1) {
+            cout << "Process " << i+1
+                 << " (size=" << procs[i] << ") -> "
+                 << "Hole " << worstIdx+1
+                 << " (was " << holes[worstIdx]
+                 << ", now " << (holes[worstIdx] - procs[i]) << ")\n";
+            holes[worstIdx] -= procs[i];
+        } else {
+            cout << "Process " << i+1
+                 << " (size=" << procs[i]
+                 << ") cannot be allocated.\n";
         }
     }
-
 }
 
-void nextfit(int n,int m , vector<int> frames,vector<int> processes){
-    int index = 0;
-    for(int i=0;i<n;i++){
-        bool found = false;
-        int count = 0;
-        for(int j = index;count<m ; j = (j+1)%m){
-            if(frames[j] >= processes[i]){
-                found = true;
-                index = j;
+void nextFit(vector<int> holes, const vector<int>& procs) {
+    cout << endl;
+    size_t start = 0;
+    for (size_t i = 0; i < procs.size(); ++i) {
+        bool allocated = false;
+        for (size_t cnt = 0, j = start; cnt < holes.size(); ++cnt, j = (j + 1) % holes.size()) {
+            if (holes[j] >= procs[i]) {
+                cout << "Process " << i+1
+                     << " (size=" << procs[i] << ") -> "
+                     << "Hole " << j+1
+                     << " (was " << holes[j]
+                     << ", now " << (holes[j] - procs[i]) << ")\n";
+                holes[j] -= procs[i];
+                start = j;
+                allocated = true;
                 break;
             }
-            count++;
         }
-
-        if(!found){
-            cout<<"Process "<<i+1<<" cannot be allocated"<<endl;
-            break;
-        } else{
-            cout<<"Process "<<i+1<<" allocated to frame "<<index +1<<endl;
-            frames[index]-=processes[i];
+        if (!allocated) {
+            cout << "Process " << i+1
+                 << " (size=" << procs[i]
+                 << ") cannot be allocated.\n";
         }
     }
 }
-int main(){
-    int n,m;
-    cout<<"Enter the frame size: "<<endl;
-    cin>>m;
-    cout<<"Enter the number of processes: "<<endl;
-    cin>>n;
-    vector<int> frames(m),processes(n);
-    cout<<"Enter the frame sizes: "<<endl;
-    for(int i=0;i<m;i++){
-        cin>>frames[i];
-    }
-    
-    cout<<"Enter the processes: "<<endl;
-    for(int i=0;i<n;i++){
-        cin>>processes[i];
+
+int main() {
+    int m, n, choice;
+
+    cout << "Enter number of holes (max 10): ";
+    cin >> m;
+    if (m < 1 || m > 10) {
+        cerr << "Invalid number of holes.\n";
+        return EXIT_FAILURE;
     }
 
-    cout<<"first fit"<<endl;
-    firstfit(n,m,frames,processes);
-    cout<<"best fit"<<endl;
-    bestfit(n,m,frames,processes);
-    cout<<"worst fit"<<endl;
-    worstfit(n,m,frames,processes);
-    cout<<"next fit"<<endl;
-    nextfit(n,m,frames,processes);
-    return 0;
+    cout << "Enter number of processes (max 10): ";
+    cin >> n;
+    if (n < 1 || n > 10) {
+        cerr << "Invalid number of processes.\n";
+        return EXIT_FAILURE;
+    }
+
+    vector<int> holes(m), procs(n);
+
+    cout << "\nEnter sizes of holes:\n";
+    for (int i = 0; i < m; ++i) {
+        cout << " Hole[" << i+1 << "]: ";
+        cin >> holes[i];
+    }
+
+    cout << "\nEnter sizes of processes:\n";
+    for (int i = 0; i < n; ++i) {
+        cout << " Process[" << i+1 << "]: ";
+        cin >> procs[i];
+    }
+
+    do {
+        cout << "\n===== Memory Allocation Menu =====\n"
+             << "1. First Fit\n"
+             << "2. Best Fit\n"
+             << "3. Worst Fit\n"
+             << "4. Next Fit\n"
+             << "5. Exit\n"
+             << "Select option [1-5]: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "\n--- First Fit ---\n";
+                firstFit(holes, procs);
+                break;
+            case 2:
+                cout << "\n--- Best Fit ---\n";
+                bestFit(holes, procs);
+                break;
+            case 3:
+                cout << "\n--- Worst Fit ---\n";
+                worstFit(holes, procs);
+                break;
+            case 4:
+                cout << "\n--- Next Fit ---\n";
+                nextFit(holes, procs);
+                break;
+            case 5:
+                cout << "Exiting...\n";
+                break;
+            default:
+                cout << "Invalid choice. Please try again.\n";
+        }
+
+        if (choice >= 1 && choice <= 4)
+            cout << "----------------------------------------\n";
+
+    } while (choice != 5);
+
+    return EXIT_SUCCESS;
 }
